@@ -117,17 +117,17 @@ class Spot(db.Model):
 		"""
         # two queries (since there is no OR statement).  
         # One for copy that does not expire and one for not-yet-expired copy
-        active_spots = []
-        q = SpotCopy.all().filter("spot =", self).filter("expire_on =", None)
-        for c in AutoRetry(q):
-            if not check_start_date or c.has_started():
-                active_spots.append(c)
-        active_spots = [c for c in AutoRetry(q)]
-        q = SpotCopy.all().filter("spot =", self).filter("expire_on >", datetime.datetime.now())
-        for c in AutoRetry(q):
-            if not check_start_date or c.has_started():
-                active_spots.append(c)
-        return active_spots
+		active_spots = []
+		q = SpotCopy.all().filter("spot =", self).filter("expire_on =", None)
+		for c in AutoRetry(q):
+			if not check_start_date or c.has_started():
+				active_spots.append(c)
+
+		q = SpotCopy.all().filter("spot =", self).filter("expire_on >", datetime.datetime.now())
+		for c in AutoRetry(q):
+			if not check_start_date or c.has_started():
+				active_spots.append(c)
+		return active_spots
 
     def add_spot_copy(self, spot_copy):
         self.random_spot_copies.append(spot_copy.key())
